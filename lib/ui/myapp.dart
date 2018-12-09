@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Api.dart';
 import 'package:flutter_app/NetworkUtil.dart';
 import 'package:flutter_app/model/Jokes.dart';
+import 'package:flutter_app/ui/JokeDetailPage.dart';
 
 
 class MyApp extends StatelessWidget {
@@ -86,7 +87,10 @@ class JokesListState extends State<JokesList> {
                   padding: EdgeInsets.only(top: 10, left: 10),
                   child: new Row(
                     children: <Widget> [
-                      new Icon(Icons.contact_mail),
+                      new Image.network(joke.avatarUrl,
+                        width: 20,
+                        height: 20,
+                      ),
                       new Text("   "),
                       new Text(joke.name)
                     ])
@@ -100,7 +104,10 @@ class JokesListState extends State<JokesList> {
               ),
             ],
           )
-      )
+      ),
+      onTap: () {
+        Navigator.push(context, new MaterialPageRoute(builder: (context) => new JokeDetailPage(content: joke.content)));
+      },
     );
   }
 
@@ -119,7 +126,13 @@ class JokesListState extends State<JokesList> {
     contents.forEach((item) {
       tmpJoke = new Joke();
       tmpJoke.content = item['content'];
-      tmpJoke.name = "${item['id']}";
+      if(item['user'] != null) {
+        tmpJoke.name = "${item['user']['login']}";
+        tmpJoke.avatarUrl = item['user']['medium'];
+      } else {
+        tmpJoke.name = "${item['id']}";
+        tmpJoke.avatarUrl = "http://pic.qiushibaike.com/system/avtnew/3212/32129742/medium/2016091014150661.webp";
+      }
       tmpJokesData.add(tmpJoke);
     });
 
@@ -139,6 +152,7 @@ class JokesListState extends State<JokesList> {
     asyncGetJokesData(false);
     return null;
   }
+
 }
 
 class JokesList extends StatefulWidget {
